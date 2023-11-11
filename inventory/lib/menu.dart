@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:inventory/form.dart';
+import 'package:inventory/drawer.dart';
+
 class Item {
   final String name;
   final IconData icon;
@@ -24,6 +27,11 @@ class Card extends StatelessWidget {
             ..hideCurrentSnackBar()
             ..showSnackBar(SnackBar(
                 content: Text("Kamu telah menekan tombol ${item.name}!")));
+            if (item.name == "Tambah Item") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FormPage()),);
+            }
         },
         child: Container(
           // Container untuk menyimpan Icon dan Text
@@ -70,6 +78,7 @@ class MyHomePage extends StatelessWidget {
                 'WillStore Inventory System',
                 ),
             ),
+            drawer: const LeftDrawer(),
             body: SingleChildScrollView(
                 // Widget wrapper yang dapat discroll
                 child: Padding(
