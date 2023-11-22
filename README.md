@@ -112,3 +112,61 @@
 1. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! (bukan hanya sekadar mengikuti tutorial)
     - Pertama, saya buat dulu file baru bernama drawer.dart untuk menjadi left drawer dari program ini yang selalu ada di setiap page (termasuk menu.dart dan form.dart). Di drawer.dart ini akan memuat 2 tulisan yaitu Nama Program dan Deskripsi Program dan memuat 2 ListTile untuk navigasi, yaitu untuk Halaman Utama dan Tambah Item, di mana ListTile untuk halaman utama akan dinavigasi ke MyHomepage di menu.dart menggunakan Navigator.pushReplacement() sedangkan untuk Tambah Item akan dinavigasi ke FormPage di form.dart menggunakan Navigator.push().
     - Kemudian, saya buat form.dart untuk menampilkan halaman Tambah Item. Di FormPage ini akan ada 4 atribut yaitu formkey, nama, amount, dan description. Kemudian, dibuat input textfield sebanyak 3 untuk masing-masing nama, amount, dan description. Setiap textfield dilengkapi oleh validator sehingga jika terjadi ketidaksesuaian input maka validator akan bernilai true sehingga nanti ketika tombol save ditekan maka akan menampilkan output "Terdapat form yang tidak valid" menggunakan SnackBar. Jika tombol save ditekan dan input valid, maka akan menampilkan pop up yang berisikan detail dari item yang disimpan dan kemudian akan mereset semua field input menjadi kosong kembali. 
+
+## Tugas 9
+### Pertanyaan:
+1.  Apakah bisa kita melakukan pengambilan data JSON tanpa membuat model terlebih dahulu? Jika iya, apakah hal tersebut lebih baik daripada membuat model sebelum melakukan pengambilan data JSON?
+    - Bisa, tetapi implementasi tanpa membuat model akan membuat kode lebih sulit untuk dibaca dan dipelihara, terutama apabila struktur dari JSON sudah kompleks.
+
+1. Jelaskan fungsi dari CookieRequest dan jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+    - CookieRequest digunakan untuk mendapatkan cookie yang dibuat oleh Django pada saat user login ke aplikasi sehingga dapat menghandle login dan logout dari user
+
+1. Jelaskan mekanisme pengambilan data dari JSON hingga dapat ditampilkan pada Flutter.
+     - Pertama, kita membuat request HTTP ke endpoint API untuk mengembalikan data JSON, yang di mana pada tugas ini terdapat pada kode sebagai berikut
+     ```
+     class _ProductPageState extends State<ProductPage> {
+        Future<List<Product>> fetchProduct() async {
+            var url = Uri.parse(
+                'http://127.0.0.1:8000/json/');
+            var response = await http.get(
+                url,
+                headers: {"Content-Type": "application/json"},
+            );
+        }
+     ```
+     - Kemudian, kita perlu untuk mengurai data JSON menjadi Object, yang di mana pada tugas ini terdapat pada kode sebagai berikut
+     ```
+     // melakukan decode response menjadi bentuk json
+    var data = jsonDecode(utf8.decode(response.bodyBytes));
+
+    // melakukan konversi data json menjadi object Product
+            List<Product> list_product = [];
+            for (var d in data) {
+                if (d != null) {
+                    list_product.add(Product.fromJson(d));
+                }
+            }
+     ```
+     - Karena data sudah dikonversi dari JSON menjadi Object, data tersebut jangan lupa disimpan ke dalam List untuk menggunakan data tersebut. Lalu, data sudah siap untuk ditampilkan
+
+1. Jelaskan mekanisme autentikasi dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+    - Pertama, pada login.dart kita meminta informasi akun seperti username dan password, kemudian kita klik login. 
+    - Kemudian, kita memanggil path /auth/login pada server Django dengan parameter username dan password
+    - Pada views.py di Django akan melakukan proses autentikasi apakah user tersebut valid atau tidak. Jika user valid, maka Django akan mengirimkan status berhasil dan membuat user logged in. Jika tidak valid, maka Django akan mengirimkan status gagal dan membuat user tidak berhasil login.
+
+1. Sebutkan seluruh widget yang kamu pakai pada tugas ini dan jelaskan fungsinya masing-masing.
+    - ListView = menampilkan children dalam urutan yang dapat discroll
+    - TextField = menerima input text dari user
+    - TextButton = sebagai tombol untuk event handling
+    - SizedBox = untuk memberikan tinggi / lebar secara spesifik kepada child
+
+1. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! (bukan hanya sekadar mengikuti tutorial).
+    - Pertama, kita buat app Django baru untuk mengautentikasi yang dikirim dari Flutter. Kemudian, kita menyetting untuk urls.py dan views.py agar dapat mengimplementasikan fungsi login.
+    - Kemudian, kita install semua depedensi yang sudah dijelaskan di tutorial
+    - Lalu, untuk CookieRequest dibuat seperti dengan langkah pada tutorial
+    - Buat login.dart untuk membuat screen dari login yang akan terintegrasi dengan fungsi login di views.py pada app autentikasi
+    - Kemudian, kita perlu untuk membuat custom model berdasarkan data JSON dari Django app kita dengan bantuan QuickType. Setelah itu, kita buat product.dart yang berisi model dari Product
+    - Lalu, kita menambahkan depedensi HTTP pada AndroidManifest.xml agar dapat mengakses internet untuk android app kita
+    - Untuk menampilkan data product dari Django secara keseluruhan seperti tutorial, tetapi saya menambahkan button pada setiap data yang muncul sehingga ketika diklik akan mendirect ke page baru untuk menampilkan semua data yang ada.
+    - Kemudian, form Flutter diintegrasikan dengan Django dengan menambahkan fungsi create_product_flutter di views.py pada app main dari inventory dan pathnya ditambahkan di urls.
+    - Lalu, kita buat fungsi logout pada views.py di autentikasi app Django agar dapat logout dari aplikasi
